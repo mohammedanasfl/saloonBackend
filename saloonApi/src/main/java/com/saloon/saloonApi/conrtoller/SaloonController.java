@@ -1,6 +1,7 @@
 package com.saloon.saloonApi.conrtoller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,12 +47,14 @@ public class SaloonController {
 
     // Delete a product
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
+    public ResponseEntity<Object> deleteProduct(@PathVariable Integer id) {
         try {
             String response = saloonService.deleteProduct(id);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("message", response, "status", HttpStatus.OK));
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found with id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Product not found", "id", id, "status", HttpStatus.NOT_FOUND));
         }
     }
+
 }
