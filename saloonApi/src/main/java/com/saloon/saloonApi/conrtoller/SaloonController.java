@@ -50,7 +50,7 @@ public class SaloonController {
     public ResponseEntity<Object> deleteProduct(@PathVariable Integer id) {
         try {
             String response = saloonService.deleteProduct(id);
-            return ResponseEntity.ok(Map.of("message", response, "status", HttpStatus.OK));
+            return ResponseEntity.ok(Map.of("deleted Sucesfully", response, "status", HttpStatus.OK));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Product not found", "id", id, "status", HttpStatus.NOT_FOUND));
