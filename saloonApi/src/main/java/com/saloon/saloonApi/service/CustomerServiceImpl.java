@@ -35,6 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (existingCustomerOpt.isPresent()) {
             Customer existingCustomer = existingCustomerOpt.get();
             existingCustomer.setName(customer.getName());
+            existingCustomer.setPhone(customer.getPhone());
             existingCustomer.setAddress(customer.getAddress());
             return customerRepo.save(existingCustomer);
         } else {

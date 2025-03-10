@@ -35,6 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (existingEmployeeOpt.isPresent()) {
 			Employee existingEmployee = existingEmployeeOpt.get();
 			existingEmployee.setName(employee.getName());
+			existingEmployee.setPhone(employee.getPhone());
 			return employeeRepo.save(existingEmployee);
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with phone: " + employeeId);
