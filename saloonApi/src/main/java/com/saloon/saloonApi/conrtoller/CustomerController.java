@@ -36,27 +36,27 @@ public class CustomerController {
 
     // Get a customer by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Integer id) {
-        Customer customer = customerService.getCustomerById(id);
+    public ResponseEntity<Customer> getCustomerById(@PathVariable  Long phone) {
+        Customer customer = customerService.getCustomerById(phone);
         return ResponseEntity.ok(customer);
     }
 
     // Update a customer
     @PutMapping("/update/{id}")
-    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable Integer id) {
-        Customer updatedCustomer = customerService.updateCustomer(customer, id);
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable Long phone) {
+        Customer updatedCustomer = customerService.updateCustomer(customer, phone);
         return ResponseEntity.ok(updatedCustomer);
     }
 
     // Delete a customer
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> deleteCustomer(@PathVariable Integer id) {
+    public ResponseEntity<Object> deleteCustomer(@PathVariable Long phone) {
         try {
-            String response = customerService.deleteCustomer(id);
+            String response = customerService.deleteCustomer(phone);
             return ResponseEntity.ok(Map.of("message", response, "status", HttpStatus.OK));
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode())
-                    .body(Map.of("error", e.getReason(), "id", id, "status", e.getStatusCode()));
+                    .body(Map.of("error", e.getReason(), "phone", phone, "status", e.getStatusCode()));
         }
     }
 }

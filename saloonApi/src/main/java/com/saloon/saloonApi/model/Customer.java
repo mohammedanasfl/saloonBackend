@@ -18,18 +18,11 @@ import lombok.NoArgsConstructor;
 public class Customer {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "customer_id")
-	private Integer Id;
-
-	
-	@Column(name="customer_phone",nullable = false,unique = true)
+	@Column(name="customer_phone")
 	private Long phone;
 	
 	@Column(name="customer_name",nullable = false)
 	private String name;
 	
-	@Column(name="customer_address",nullable = false)
-	private String address;
 
 }

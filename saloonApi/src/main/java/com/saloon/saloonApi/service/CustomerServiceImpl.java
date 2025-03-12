@@ -29,33 +29,31 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer updateCustomer(Customer customer, Integer customerId) {
-        Optional<Customer> existingCustomerOpt = customerRepo.findById(customerId);
+    public Customer updateCustomer(Customer customer, Long phone) {
+        Optional<Customer> existingCustomerOpt = customerRepo.findById(phone);
 
         if (existingCustomerOpt.isPresent()) {
             Customer existingCustomer = existingCustomerOpt.get();
             existingCustomer.setName(customer.getName());
-            existingCustomer.setPhone(customer.getPhone());
-            existingCustomer.setAddress(customer.getAddress());
             return customerRepo.save(existingCustomer);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + customerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + phone);
         }
     }
 
 	@Override
-	public String deleteCustomer(Integer customerId) {
-		if (!customerRepo.existsById(customerId)) {
-            throw new NoSuchElementException("Product not found with id: " + customerId);
+	public String deleteCustomer(Long phone) {
+		if (!customerRepo.existsById(phone)) {
+            throw new NoSuchElementException("Product not found with id: " + phone);
         }
-        customerRepo.deleteById(customerId);
+        customerRepo.deleteById(phone);
         return "Deleted successfully";
 	}
 
 	@Override
-	public Customer getCustomerById(Integer customerId) {
-	    return customerRepo.findById(customerId)
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + customerId));
+	public Customer getCustomerById(Long phone) {
+	    return customerRepo.findById(phone)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + phone));
 	}
 
 

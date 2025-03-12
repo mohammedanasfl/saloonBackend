@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.saloon.saloonApi.model.Customer;
 
-public interface CustomerRepo extends JpaRepository<Customer, Integer>{
+public interface CustomerRepo extends JpaRepository<Customer, Long>{
 
 }
