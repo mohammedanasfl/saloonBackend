@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.saloon.saloonApi.model.Customer;
 import com.saloon.saloonApi.service.CustomerService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -29,7 +32,7 @@ public class CustomerController {
 
     // Create a new customer
     @PostMapping("/create")
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
         Customer createdCustomer = customerService.createCustomer(customer);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
     }

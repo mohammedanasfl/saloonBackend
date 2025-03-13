@@ -1,22 +1,23 @@
 package com.saloon.saloonApi.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.saloon.saloonApi.model.Customer;
 import com.saloon.saloonApi.repository.CustomerRepo;
+import com.saloon.saloonApi.exception.ServiceException;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    @Autowired
-    private CustomerRepo customerRepo;
+    private final CustomerRepo customerRepo;
+
+    public CustomerServiceImpl(CustomerRepo customerRepo) {
+        this.customerRepo = customerRepo;
+    }
 
     @Override
     public List<Customer> getAllCustomer() {
@@ -25,38 +26,49 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer createCustomer(Customer customer) {
-        return customerRepo.save(customer);
+        // 🔹 Check if phone number already exists
+        if (customerRepo.existsById(customer.getPhone())) {
+            throw new ServiceException("Customer with phone " + customer.getPhone() + " already exists");
+        }
+
+        try {
+            return customerRepo.save(customer);
+        } catch (DataIntegrityViolationException e) {
+            throw new ServiceException("Database error: Invalid data provided");
+        }
     }
 
     @Override
     public Customer updateCustomer(Customer customer, Long phone) {
-        Optional<Customer> existingCustomerOpt = customerRepo.findById(phone);
+        Customer existingCustomer = customerRepo.findById(phone)
+                .orElseThrow(() -> new ServiceException("Customer not found with phone: " + phone));
 
-        if (existingCustomerOpt.isPresent()) {
-            Customer existingCustomer = existingCustomerOpt.get();
-            existingCustomer.setName(customer.getName());
+        existingCustomer.setName(customer.getName());
+
+        try {
             return customerRepo.save(existingCustomer);
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + phone);
+        } catch (DataIntegrityViolationException e) {
+            throw new ServiceException("Database error: Could not update customer");
         }
     }
 
-	@Override
-	public String deleteCustomer(Long phone) {
-		if (!customerRepo.existsById(phone)) {
-            throw new NoSuchElementException("Product not found with id: " + phone);
+    @Override
+    public String deleteCustomer(Long phone) {
+        if (!customerRepo.existsById(phone)) {
+            throw new ServiceException("Customer not found with phone: " + phone);
         }
-        customerRepo.deleteById(phone);
-        return "Deleted successfully";
-	}
 
-	@Override
-	public Customer getCustomerById(Long phone) {
-	    return customerRepo.findById(phone)
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + phone));
-	}
+        try {
+            customerRepo.deleteById(phone);
+            return "Deleted successfully";
+        } catch (Exception e) {
+            throw new ServiceException("Error deleting customer with phone: " + phone);
+        }
+    }
 
-
-
-    
+    @Override
+    public Customer getCustomerById(Long phone) {
+        return customerRepo.findById(phone)
+                .orElseThrow(() -> new ServiceException("Customer not found with phone: " + phone));
+    }
 }

@@ -1,60 +1,74 @@
 package com.saloon.saloonApi.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.saloon.saloonApi.model.Employee;
 import com.saloon.saloonApi.repository.EmployeeRepo;
-
-import org.springframework.http.HttpStatus;
+import com.saloon.saloonApi.exception.ServiceException;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-	@Autowired
-	private EmployeeRepo employeeRepo;
+    private final EmployeeRepo employeeRepo;
 
-	@Override
-	public List<Employee> getAllEmployee() {
-		return employeeRepo.findAll();
-	}
+    public EmployeeServiceImpl(EmployeeRepo employeeRepo) {
+        this.employeeRepo = employeeRepo;
+    }
 
-	@Override
-	public Employee createEmployee(Employee employee) {
-		return employeeRepo.save(employee);
-	}
+    @Override
+    public List<Employee> getAllEmployee() {
+        return employeeRepo.findAll();
+    }
 
-	@Override
-	public Employee updateEmployee(Employee employee, Integer employeeId) {
-		Optional<Employee> existingEmployeeOpt = employeeRepo.findById(employeeId);
+    @Override
+    public Employee createEmployee(Employee employee) {
+        // 🔹 Check if phone number is already used
+        if (employeeRepo.existsById(employee.getId())) {
+            throw new ServiceException("Employee with ID " + employee.getId() + " already exists");
+        }
 
-		if (existingEmployeeOpt.isPresent()) {
-			Employee existingEmployee = existingEmployeeOpt.get();
-			existingEmployee.setName(employee.getName());
-			existingEmployee.setPhone(employee.getPhone());
-			return employeeRepo.save(existingEmployee);
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with phone: " + employeeId);
-		}
-	}
+        try {
+            return employeeRepo.save(employee);
+        } catch (DataIntegrityViolationException e) {
+            throw new ServiceException("Database error: Invalid data provided");
+        }
+    }
 
-	@Override
-	public String deleteEmployee(Integer employeeId) {
-		if (!employeeRepo.existsById(employeeId)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found with phone: " + employeeId);
-		}
-		employeeRepo.deleteById(employeeId);
-		return "Deleted successfully";
-	}
+    @Override
+    public Employee updateEmployee(Employee employee, Integer employeeId) {
+        Employee existingEmployee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new ServiceException("Employee not found with ID: " + employeeId));
 
-	@Override
-	public Employee getEmployeeById(Integer employeeId) {
-		return employeeRepo.findById(employeeId).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with ID: " + employeeId));
-	}
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setPhone(employee.getPhone());
 
+        try {
+            return employeeRepo.save(existingEmployee);
+        } catch (DataIntegrityViolationException e) {
+            throw new ServiceException("Database error: Could not update employee");
+        }
+    }
+
+    @Override
+    public String deleteEmployee(Integer employeeId) {
+        if (!employeeRepo.existsById(employeeId)) {
+            throw new ServiceException("Employee not found with ID: " + employeeId);
+        }
+
+        try {
+            employeeRepo.deleteById(employeeId);
+            return "Deleted successfully";
+        } catch (Exception e) {
+            throw new ServiceException("Error deleting employee with ID: " + employeeId);
+        }
+    }
+
+    @Override
+    public Employee getEmployeeById(Integer employeeId) {
+        return employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new ServiceException("Employee not found with ID: " + employeeId));
+    }
 }

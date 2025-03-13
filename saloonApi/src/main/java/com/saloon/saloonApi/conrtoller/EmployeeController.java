@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.saloon.saloonApi.model.Employee;
 import com.saloon.saloonApi.service.EmployeeService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -29,7 +32,7 @@ public class EmployeeController {
 
     // Create a new employee
     @PostMapping("/create")
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
         Employee createdEmployee = employeeService.createEmployee(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
     }

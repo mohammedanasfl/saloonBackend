@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.saloon.saloonApi.model.ProductList;
 import com.saloon.saloonApi.service.SaloonService;
+
+import jakarta.validation.Valid;
+
 import java.util.NoSuchElementException;
 
 @RestController
@@ -29,7 +32,7 @@ public class SaloonController {
 
     // Create a new product
     @PostMapping("/create")
-    public ResponseEntity<ProductList> createProduct(@RequestBody ProductList productList) {
+    public ResponseEntity<ProductList> createProduct(@Valid @RequestBody ProductList productList) {
         ProductList createdProduct = saloonService.createProduct(productList);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }

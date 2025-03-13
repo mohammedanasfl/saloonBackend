@@ -14,6 +14,8 @@ import com.saloon.saloonApi.DTO.SalesRecordRequest;
 import com.saloon.saloonApi.model.SalesRecord;
 import com.saloon.saloonApi.service.SalesRecordService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/sales")
@@ -27,7 +29,7 @@ public class SalesRecordController {
 
     //  Create a new sales record
     @PostMapping
-    public ResponseEntity<SalesRecord> createSalesRecord(@RequestBody SalesRecordRequest request) {
+    public ResponseEntity<SalesRecord> createSalesRecord(@Valid @RequestBody SalesRecordRequest request) {
         SalesRecord salesRecord = salesRecordService.createSalesRecord(request);
         return ResponseEntity.ok(salesRecord);
     }
