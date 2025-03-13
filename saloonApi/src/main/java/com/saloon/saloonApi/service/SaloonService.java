@@ -10,7 +10,7 @@ public interface SaloonService {
 	
 	ProductList createProduct(ProductList productList);
 	
-	String upadateProduct(ProductList productList,Integer productId);
+	ProductList upadateProduct(ProductList productList,Integer productId);
 	
 	String deleteProduct(Integer id);
 	

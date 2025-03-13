@@ -36,9 +36,9 @@ public class SaloonController {
 
     // Update a product
     @PutMapping("/update/{productId}")
-    public ResponseEntity<String> updateProduct(@RequestBody ProductList productList, @PathVariable(name="productId") Integer productId) {
+    public ResponseEntity<ProductList> updateProduct(@RequestBody ProductList productList, @PathVariable(name="productId") Integer productId) {
         try {
-            String updatedProduct = saloonService.upadateProduct(productList,productId);
+            ProductList updatedProduct = saloonService.upadateProduct(productList,productId);
             return ResponseEntity.ok(updatedProduct);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

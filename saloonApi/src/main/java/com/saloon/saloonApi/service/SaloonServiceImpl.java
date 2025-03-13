@@ -27,20 +27,19 @@ public class SaloonServiceImpl implements SaloonService {
     }
 
     @Override
-    public String upadateProduct(ProductList productList,Integer productId) {
-        Optional<ProductList> existingProductOpt = saloonRepository.findById(productId);
-
-        if (existingProductOpt.isPresent()) {
-            ProductList existingProduct = existingProductOpt.get();
-            
-            existingProduct.setName(productList.getName());
-            existingProduct.setPrice(productList.getPrice());
-            saloonRepository.save(existingProduct);
-            return "Product updated Sucessfully";
-        } else {
-            throw new NoSuchElementException("Product not found with id: " + productList.getId());
-        }
-    }
+	public ProductList upadateProduct(ProductList productList,Integer productId) {
+	    Optional<ProductList> existingProductOpt = saloonRepository.findById(productId);
+	
+	    if (existingProductOpt.isPresent()) {
+	        ProductList existingProduct = existingProductOpt.get();
+	        
+	        existingProduct.setName(productList.getName());
+	        existingProduct.setPrice(productList.getPrice());
+	        return saloonRepository.save(existingProduct);
+	    } else {
+	        throw new NoSuchElementException("Product not found with id: " + productList.getId());
+	    }
+	}
 
 
     @Override
