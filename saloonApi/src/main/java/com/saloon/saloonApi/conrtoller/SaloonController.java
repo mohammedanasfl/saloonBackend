@@ -34,7 +34,7 @@ public class SaloonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
-    // Update a product     
+    // Update a product       
     @PutMapping("/update/{productId}")
     public ResponseEntity<ProductList> updateProduct(@RequestBody ProductList productList, @PathVariable(name="productId") Integer productId) {
         try {
